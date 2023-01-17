@@ -1,0 +1,66 @@
+service: sportingg # e.g. chuck-norris
+app: sportinggrnchat # e.g. chuck-norris
+org: sportingg # e.g. tenant
+
+frameworkVersion: '>=1.32.0 <2.0.0'
+
+provider:
+    name: aws
+    runtime: nodejs12.x
+    stage: prod
+    region: eu-west-1
+    memorySize: 3008
+    timeout: 30
+    cfnRole: arn:aws:iam::462575771993:role/cfnRole # ARN of an IAM role for CloudFormation service. If specified, CloudFormation uses the role's credentials
+    environment:
+        STREAM_KEY: 'zs7944f2yb7s'
+        STREAM_SECRET: '5euz2em6qxwen6drz6w6z7t2e9vgrdtry6p5gxgx7kj8vjb2g38zuuthtxtchkwf'
+        STREAM_APP_ID: 'zs7944f2yb7s'
+        CHANNEL_TYPE: messaging # keep this as messaging
+functions:
+    init:
+        handler: handler.init
+        events:
+            - http:
+                  path: /init
+                  method: post
+    reply:
+        handler: handler.reply
+        events:
+            - http:
+                  path: /reply
+                  method: post
+    message:
+        handler: handler.message
+        events:
+            - http:
+                  path: /message
+                  method: post
+
+    membership:
+        handler: handler.membership
+        events:
+            - http:
+                  path: /membership
+                  method: post
+
+    channel:
+        handler: handler.channel
+        events:
+            - http:
+                  path: /channel
+                  method: post
+
+plugins:
+    - serverless-webpack
+    - serverless-offline
+
+custom:
+    webpack:
+        packager: 'yarn'
+        webpackConfig: 'webpack.config.js'
+        includeModules:
+            forceInclude:
+                - '@babel/runtime'
+    serverless-offline:
+        port: 8000
